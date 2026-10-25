@@ -1,25 +1,33 @@
 import { useMemo, useState } from 'react'
 import BarChart from './BarChart.jsx'
+import LineChart from './LineChart.jsx'
+import Icon from './Icons.jsx'
+import StatusBadge from './StatusBadge.jsx'
 import {
+  DEMO_BANNER,
+  NOW_MIN,
   RANGES,
   dayLabel,
   fmtTime,
   getIncidents,
   getInsights,
+  getInvestigate,
   getMetrics,
+  getSpeedSeries,
   getUsageSeries,
+  incidentLabel,
   periodLabel,
 } from './demoData.js'
 
-function Metric({ label, value, unit, def }) {
+function Metric({ icon, label, value, unit, def }) {
   return (
     <div className="card metric">
-      <p className="label">{label}</p>
-      <p className="value">
+      <p className="m-label"><Icon name={icon} size={16} />{label}</p>
+      <p className="t-metric m-value">
         {value}
-        {unit && <small>{unit}</small>}
+        {unit && <span className="m-unit">{unit}</span>}
       </p>
-      <p className="def">{def}</p>
+      <p className="t-caption">{def}</p>
     </div>
   )
 }
@@ -27,19 +35,29 @@ function Metric({ label, value, unit, def }) {
 export default function Operator() {
   const [range, setRange] = useState('today')
   const m = useMemo(() => getMetrics(range), [range])
-  const series = useMemo(() => getUsageSeries(range), [range])
+  const usage = useMemo(() => getUsageSeries(range), [range])
+  const speed = useMemo(() => getSpeedSeries(range), [range])
   const incidents = useMemo(() => getIncidents(range), [range])
   const insights = useMemo(() => getInsights(range), [range])
-  const peak = series.reduce((best, d, i) => (d.value > series[best].value ? i : best), 0)
+  const investigate = useMemo(() => getInvestigate(range), [range])
   const today = range === 'today'
+  const peak = usage.reduce((best, d, i) => (d.value > usage[best].value ? i : best), 0)
+  const unitWord = today ? 'hour' : 'day'
+  const period = periodLabel(range)
 
   return (
     <main className="page">
-      <div className="page-head">
-        <div>
-          <p className="eyebrow">Operator view · internal demo, no login</p>
-          <h1>Service monitoring</h1>
-          <p className="muted small">{periodLabel(range)}</p>
+      {/* A. Header and selected period */}
+      <header className="dash-head">
+        <div className="stack-3">
+          <h1 className="t-page">Service dashboard</h1>
+          <p className="t-caption" style={{ fontSize: '0.875rem' }}>
+            Operator view for the proposed Nenoti Posta pilot · {period}
+          </p>
+          <div className="note" role="note">
+            <Icon name="info" size={18} />
+            <span>{DEMO_BANNER}</span>
+          </div>
         </div>
         <div className="seg" role="group" aria-label="Time range">
           {RANGES.map((r) => (
@@ -48,68 +66,122 @@ export default function Operator() {
             </button>
           ))}
         </div>
-      </div>
+      </header>
 
-      <section className="metrics" aria-label="Key metrics (simulated)">
-        <Metric label="Active now" value={m.activeNow} unit="sessions" def="Open sessions at 17:30 demo time" />
-        <Metric label="Sessions started" value={m.sessions.toLocaleString()} unit="sessions" def={today ? 'Today so far' : 'Across the 7 demo days'} />
-        <Metric label="Data used" value={m.dataGB.toFixed(1)} unit="GB" def="All sessions in the period" />
-        <Metric label="Average speed" value={m.avgSpeed.toFixed(1)} unit="Mbps" def="Mean of session averages" />
-        <Metric label="Uptime" value={m.uptime.toFixed(1)} unit="%" def={`Minutes without a service-wide outage (${m.downMinutes} min down)`} />
-        <Metric label="Incidents" value={m.incidents} unit="logged" def="Outages and slowdowns in the period" />
+      {/* B. Summary metrics */}
+      <section className="metrics" aria-label="Summary metrics (simulated)">
+        <Metric icon="users" label="Active now" value={m.activeNow} unit="sessions" def={`Open at ${fmtTime(NOW_MIN)} demo time`} />
+        <Metric icon="activity" label="Sessions" value={m.sessions.toLocaleString()} unit="started" def={today ? 'Today so far' : 'Across 7 demo days'} />
+        <Metric icon="database" label="Data used" value={m.dataGB.toFixed(1)} unit="GB" def="All sessions in period" />
+        <Metric icon="gauge" label="Average speed" value={m.avgSpeed.toFixed(1)} unit="Mbps" def="Mean of session speeds" />
+        <Metric icon="clock" label="Uptime" value={m.uptime.toFixed(1)} unit="%" def={`${m.downMinutes} min service-wide outage`} />
+        <Metric icon="alert" label="Incidents" value={m.incidents} unit="logged" def="Outages and slowdowns" />
       </section>
 
-      <div className="grid-main">
-        <section className="card" aria-labelledby="usage-title">
-          <h2 id="usage-title">{today ? 'Sessions started per hour' : 'Sessions started per day'}</h2>
-          <p className="muted small">{periodLabel(range)} · simulated · darkest bar is the busiest</p>
+      {/* C and D. Usage and performance trends */}
+      <h2 className="t-section section-title">Demand and performance</h2>
+      <div className="grid-2">
+        <section className="card chart-card" aria-labelledby="usage-title">
+          <h3 id="usage-title" className="t-section">Sessions started per {unitWord}</h3>
+          <p className="t-caption">Number of sessions · {period}</p>
+          <div className="legend" aria-hidden="true">
+            <span><i className="sw" style={{ background: '#0f766e' }} />Sessions</span>
+            <span><i className="sw" style={{ background: '#102a43' }} />Busiest {unitWord}</span>
+          </div>
           <BarChart
-            data={series}
+            data={usage}
             highlight={peak}
-            yLabel="Sessions"
+            yLabel="Sessions started"
             xLabel={today ? 'Hour of day (demo time)' : 'Demo day'}
-            describe={`Bar chart of simulated sessions started per ${today ? 'hour' : 'day'}. Total ${m.sessions}.`}
+            describe={`Bar chart of simulated sessions started per ${unitWord}. Total ${m.sessions}.`}
           />
         </section>
 
-        <section className="card" aria-labelledby="insight-title">
-          <h2 id="insight-title">What this data suggests</h2>
-          <p className="muted small">Computed from the simulated data only. Not a finding about any real site.</p>
-          <ul className="insights">
-            {insights.map((t) => (
-              <li key={t}>{t}</li>
-            ))}
-          </ul>
-          <p className="small" style={{ marginTop: 'var(--s3)' }}>
-            <strong>How an operator could use this:</strong> if real measurements ever showed speed falling at the
-            busiest hour, the next step would be to check backhaul capacity, access-point placement, interference
-            and demand before spending on upgrades.
+        <section className="card chart-card" aria-labelledby="speed-title">
+          <h3 id="speed-title" className="t-section">Average speed per {unitWord}</h3>
+          <p className="t-caption">Mean session speed in Mbps · {period}</p>
+          <div className="legend" aria-hidden="true">
+            <span><i className="sw sw-line" style={{ background: '#0f766e' }} />Average speed</span>
+            <span><i className="sw" style={{ background: '#dcece7', border: '1px solid #b9d6cd' }} />Busiest {unitWord} for sessions</span>
+          </div>
+          <LineChart
+            data={speed}
+            highlight={speed[peak] && speed[peak].value != null ? peak : -1}
+            unit="Mbps"
+            yLabel="Speed (Mbps)"
+            xLabel={today ? 'Hour of day (demo time)' : 'Demo day'}
+            describe={`Line chart of simulated average speed per ${unitWord}, in megabits per second.`}
+          />
+          <p className="t-caption" style={{ marginTop: 'var(--s2)' }}>
+            Gaps mean fewer than 3 sessions, too few to average.
           </p>
         </section>
+      </div>
 
-        <section className="card span-2" aria-labelledby="inc-title">
-          <h2 id="inc-title">Service incidents</h2>
-          <p className="muted small">Simulated log. A service-wide outage counts against uptime; slowdowns and single access-point events do not.</p>
-          <div className="table-wrap">
-            <table className="incident-table">
-              <thead>
-                <tr><th>ID</th><th>When (demo time)</th><th>Type</th><th>Affects</th><th>Minutes</th><th>Status</th></tr>
-              </thead>
-              <tbody>
-                {incidents.map((i) => (
-                  <tr key={i.id}>
-                    <td data-label="ID" className="num">{i.id}</td>
-                    <td data-label="When" className="num">{dayLabel(i.day)} {fmtTime(i.start)}</td>
-                    <td data-label="Type">{i.type}</td>
-                    <td data-label="Affects">{i.scope === 'All' ? 'Whole service' : i.scope}</td>
-                    <td data-label="Minutes" className="num">{i.minutes}{i.ongoing ? ' so far' : ''}</td>
-                    <td data-label="Status">
-                      <span className={`pill ${i.ongoing ? 'warn' : 'grey'}`}>{i.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* E and F. Incidents and interpretation */}
+      <h2 className="t-section section-title">Incidents and interpretation</h2>
+      <div className="grid-2 wide-left">
+        <section className="card" aria-labelledby="inc-title">
+          <h3 id="inc-title" className="t-section">Service incidents</h3>
+          <p className="t-caption">
+            A service-wide outage counts against uptime. Slowdowns and single access-point events are logged but do not.
+          </p>
+          {incidents.length === 0 ? (
+            <div className="empty">
+              <Icon name="check" size={28} />
+              <p className="t-label">No incidents in this period</p>
+            </div>
+          ) : (
+            <div className="table-wrap">
+              <table className="incident-table">
+                <thead>
+                  <tr><th>When (demo time)</th><th>Event</th><th>Affects</th><th>Minutes</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  {incidents.map((i) => {
+                    const lab = incidentLabel(i)
+                    return (
+                      <tr key={i.id}>
+                        <td data-label="When" className="num">{dayLabel(i.day)} {fmtTime(i.start)}</td>
+                        <td data-label="Event">
+                          <span className="stack-3">
+                            <StatusBadge kind={lab.tone} icon={lab.icon}>{lab.text}</StatusBadge>
+                            <span className="t-caption" style={{ display: 'block' }}>{i.type}</span>
+                          </span>
+                        </td>
+                        <td data-label="Affects">{i.scope === 'All' ? 'Whole service' : i.scope}</td>
+                        <td data-label="Minutes" className="num">{i.minutes}{i.ongoing ? ' so far' : ''}</td>
+                        <td data-label="Status">
+                          {i.ongoing ? <StatusBadge kind="warning" icon="clock">Monitoring</StatusBadge> : <StatusBadge kind="neutral">Resolved</StatusBadge>}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        <section className="card" aria-labelledby="insight-title">
+          <div className="row between" style={{ alignItems: 'flex-start' }}>
+            <h3 id="insight-title" className="t-section">What the data may suggest</h3>
+          </div>
+          <div style={{ marginTop: 'var(--s2)' }}>
+            <StatusBadge kind="simulated">Illustrative, not a measured finding</StatusBadge>
+          </div>
+          <ul className="insight-list">
+            {insights.map((t) => (
+              <li key={t}><Icon name="bulb" size={18} /><span>{t}</span></li>
+            ))}
+          </ul>
+          <div className="sub-head">
+            <h4 className="t-label" style={{ margin: 0 }}>What an operator might investigate</h4>
+            <ul className="insight-list">
+              {investigate.map((t) => (
+                <li key={t}><Icon name="search" size={18} /><span>{t}</span></li>
+              ))}
+            </ul>
           </div>
         </section>
       </div>

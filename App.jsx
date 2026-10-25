@@ -1,24 +1,44 @@
-import { useEffect, useState } from 'react'
-import { WifiIcon } from './Icons.jsx'
+import { Component, useEffect, useState } from 'react'
+import Icon from './Icons.jsx'
 import { DEMO_BANNER } from './demoData.js'
+import About from './About.jsx'
 import Operator from './Operator.jsx'
 import Passenger from './Passenger.jsx'
-import Status from './Status.jsx'
 
+// Two main views. "About" lives in the footer because it explains the prototype rather than being part of the product.
 const ROUTES = {
-  '/': { title: 'Passenger', label: 'Passenger', Page: Passenger },
-  '/operator': { title: 'Operator', label: 'Operator', Page: Operator },
-  '/status': { title: 'Status', label: 'Status', Page: Status },
+  '/': { title: 'Passenger', Page: Passenger, nav: 'Passenger' },
+  '/operator': { title: 'Operator dashboard', Page: Operator, nav: 'Operator' },
+  '/about': { title: 'About this prototype', Page: About },
 }
+const ALIASES = { '/status': '/about' } // the old Status page now lives at /about
 
 const readRoute = () => {
-  const path = window.location.hash.replace(/^#/, '') || '/'
+  const raw = window.location.hash.replace(/^#/, '') || '/'
+  const path = ALIASES[raw] || raw
   return ROUTES[path] ? path : '/'
+}
+
+class Boundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  render() {
+    if (!this.state.failed) return this.props.children
+    return (
+      <main className="page narrow">
+        <div className="card pad-lg stack-4">
+          <h1 className="t-page">Something went wrong</h1>
+          <p className="muted">This screen could not be shown. Restarting the demo usually fixes it.</p>
+          <button className="btn btn-primary" onClick={this.props.onRestart}>Restart demo</button>
+        </div>
+      </main>
+    )
+  }
 }
 
 export default function App() {
   const [route, setRoute] = useState(readRoute)
-  const [runKey, setRunKey] = useState(0) // bumping this remounts the pages = restart the demo
+  const [runKey, setRunKey] = useState(0) // bumping this remounts the page = restart the demo
 
   useEffect(() => {
     const onHash = () => setRoute(readRoute())
@@ -27,7 +47,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = `${ROUTES[route].title} · StreetKash demo`
+    document.title = `${ROUTES[route].title} · StreetKash`
     window.scrollTo(0, 0)
   }, [route])
 
@@ -40,23 +60,30 @@ export default function App() {
   const { Page } = ROUTES[route]
   return (
     <>
-      <div className="demo-banner" role="note">{DEMO_BANNER}</div>
       <header className="topbar">
         <div className="topbar-inner">
-          <a className="brand" href="#/"><WifiIcon size={22} />StreetKash</a>
-          <nav className="nav" aria-label="Demo views">
-            {Object.entries(ROUTES).map(([path, r]) => (
-              <a key={path} href={`#${path}`} aria-current={route === path ? 'page' : undefined}>
-                {r.label}
-              </a>
+          <a className="brand" href="#/" aria-label="StreetKash home">
+            <span className="brand-mark"><Icon name="wifi" size={18} /></span>
+            StreetKash
+          </a>
+          <nav className="nav" aria-label="Main">
+            {Object.entries(ROUTES).filter(([, r]) => r.nav).map(([path, r]) => (
+              <a key={path} href={`#${path}`} aria-current={route === path ? 'page' : undefined}>{r.nav}</a>
             ))}
           </nav>
         </div>
       </header>
-      <Page key={`${route}-${runKey}`} />
+      <Boundary key={`${route}-${runKey}`} onRestart={restart}>
+        <Page />
+      </Boundary>
       <footer className="footer">
-        <span>YSI Cohort 1 · early-stage concept. No live network exists yet.</span>
-        <button className="btn btn-secondary auto" onClick={restart}>Restart demo</button>
+        <div className="footer-inner">
+          <p className="t-caption">{DEMO_BANNER}</p>
+          <div className="footer-links">
+            <a className="link-btn" href="#/about">About this prototype</a>
+            <button className="link-btn" onClick={restart}><Icon name="reset" size={16} />Restart demo</button>
+          </div>
+        </div>
       </footer>
     </>
   )

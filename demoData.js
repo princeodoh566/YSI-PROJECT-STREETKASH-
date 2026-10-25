@@ -227,3 +227,54 @@ export function getSessionExample() {
     mbPerMinute: mean(today.map((s) => s.mb / s.minutes)),
   }
 }
+
+// ---------- additions for the redesigned dashboard (same dataset) ----------
+const MIN_SESSIONS_FOR_SPEED = 3 // hours with fewer sessions are left blank instead of plotting noise
+
+// Mean session speed per hour (today) or per day (7 days). value is null when there is too little data.
+export function getSpeedSeries(range) {
+  const group = (list) =>
+    list.length >= MIN_SESSIONS_FOR_SPEED ? mean(list.map((s) => s.speed)) : null
+  if (range === 'today') {
+    const hours = Math.floor(NOW_MIN / 60) + 1
+    return Array.from({ length: hours }, (_, h) => ({
+      label: String(h).padStart(2, '0'),
+      title: `${fmtTime(h * 60)}–${fmtTime(h === hours - 1 ? NOW_MIN : (h + 1) * 60)}`,
+      value: group(SESSIONS.filter((s) => s.day === TODAY && s.hour === h)),
+    }))
+  }
+  return Array.from({ length: DAYS }, (_, d) => ({
+    label: d === TODAY ? 'Today' : `D${d + 1}`,
+    title: d === TODAY ? `Today (to ${fmtTime(NOW_MIN)})` : `Day ${d + 1}`,
+    value: group(SESSIONS.filter((s) => s.day === d)),
+  }))
+}
+
+// Human label for an incident, so meaning never depends on colour alone.
+export function incidentLabel(i) {
+  if (i.kind === 'degraded') return { text: 'Slowdown', tone: 'warning', icon: 'gauge' }
+  if (i.scope === 'All') return { text: 'Service outage', tone: 'warning', icon: 'x' }
+  return { text: 'Access point outage', tone: 'warning', icon: 'alert' }
+}
+
+// Prompts for an operator, built from the simulated figures. These are questions to investigate, not findings.
+export function getInvestigate(range) {
+  const sessions = sessionsIn(range)
+  const incidents = incidentsIn(range)
+  const byHour = Array.from({ length: 24 }, (_, h) => sessions.filter((s) => s.hour === h).length)
+  const peak = byHour.indexOf(Math.max(...byHour))
+  const perAp = ACCESS_POINTS.map((ap) => ({ ap, n: sessions.filter((s) => s.ap === ap).length }))
+  const busiestAp = perAp.slice().sort((a, b) => b.n - a.n)[0]
+  const counts = {}
+  incidents.forEach((i) => (counts[i.type] = (counts[i.type] || 0) + 1))
+  const topType = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]
+  return [
+    `Is backhaul capacity enough between ${fmtTime(peak * 60)} and ${fmtTime((peak + 1) * 60)}, when session starts peak?`,
+    `Is load balanced across access points? ${busiestAp.ap} carried ${Math.round((100 * busiestAp.n) / sessions.length)}% of sessions in this simulation.`,
+    !topType
+      ? 'No incidents in this period, so there is nothing to investigate yet.'
+      : topType[1] > 1
+        ? `"${topType[0]}" happened ${topType[1]} times in this period. Is there a common cause?`
+        : `Was the "${topType[0].toLowerCase()}" an isolated event? Check its cause before it repeats.`,
+  ]
+}

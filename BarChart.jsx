@@ -44,8 +44,8 @@ export default function BarChart({ data, yLabel, xLabel, describe, highlight = -
       <svg width={width} height={height} role="img" aria-label={describe}>
         {ticks.map((tk) => (
           <g key={tk}>
-            <line x1={m.left} x2={width - m.right} y1={y(tk)} y2={y(tk)} stroke="#e3e8ee" />
-            <text x={m.left - 8} y={y(tk) + 4} textAnchor="end" fontSize="11" fill="#5b6b7c">
+            <line x1={m.left} x2={width - m.right} y1={y(tk)} y2={y(tk)} stroke="#d9e2ec" />
+            <text x={m.left - 8} y={y(tk) + 4} textAnchor="end" fontSize="12" fill="#526579">
               {Number.isInteger(tk) ? tk : tk.toFixed(1)}
             </text>
           </g>
@@ -61,12 +61,12 @@ export default function BarChart({ data, yLabel, xLabel, describe, highlight = -
                 width={barW}
                 height={h}
                 rx="2"
-                fill={i === highlight ? '#0b1f33' : '#0f766e'}
+                fill={i === highlight ? '#102a43' : '#0f766e'}
               >
                 <title>{`${d.title}: ${d.value} ${yLabel.toLowerCase()}`}</title>
               </rect>
               {i % every === 0 && (
-                <text x={x + barW / 2} y={m.top + ih + 16} textAnchor="middle" fontSize="11" fill="#5b6b7c">
+                <text x={x + barW / 2} y={m.top + ih + 16} textAnchor="middle" fontSize="12" fill="#526579">
                   {d.label}
                 </text>
               )}
@@ -78,12 +78,12 @@ export default function BarChart({ data, yLabel, xLabel, describe, highlight = -
           y={m.top + ih / 2}
           transform={`rotate(-90 12 ${m.top + ih / 2})`}
           textAnchor="middle"
-          fontSize="11"
-          fill="#35495e"
+          fontSize="12"
+          fill="#526579"
         >
           {yLabel}
         </text>
-        <text x={m.left + iw / 2} y={height - 6} textAnchor="middle" fontSize="11" fill="#35495e">
+        <text x={m.left + iw / 2} y={height - 6} textAnchor="middle" fontSize="12" fill="#526579">
           {xLabel}
         </text>
       </svg>
