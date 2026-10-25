@@ -4,7 +4,7 @@ import StatusBadge from './StatusBadge.jsx'
 // One honest page that separates what exists from what is only proposed.
 const GROUPS = [
   {
-    kind: 'live',
+    kind: 'built',
     badge: 'Built in this prototype',
     icon: 'check',
     note: 'Works in the software today. Front-end only.',

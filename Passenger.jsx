@@ -7,6 +7,38 @@ import { SITE, getSessionExample } from './demoData.js'
 // Everything here is front-end state only. No network connection is ever made.
 const example = getSessionExample()
 
+// What each part of the concept is, and its honest status today.
+const FLOW = [
+  { icon: 'server', title: 'Internet backhaul', text: 'The connection that brings internet into the site.', badge: 'proposed', label: 'Proposed' },
+  { icon: 'wifi', title: 'Wi-Fi access points', text: 'Coverage across the waiting and boarding areas.', badge: 'proposed', label: 'Proposed' },
+  { icon: 'users', title: 'Passenger access', text: 'A simple way to connect and see session status.', badge: 'simulated', label: 'Demo built' },
+  { icon: 'activity', title: 'Monitoring and analytics', text: 'Usage, speed, uptime and incidents for operators.', badge: 'simulated', label: 'Demo built' },
+]
+
+function SignalPanel() {
+  return (
+    <figure className="signal-panel">
+      <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="#ffffff" strokeOpacity="0.09" strokeWidth="1.5">
+          <circle cx="200" cy="110" r="46" />
+          <circle cx="200" cy="110" r="80" />
+          <circle cx="200" cy="110" r="114" />
+          <circle cx="200" cy="110" r="150" />
+        </g>
+        <g fill="none" stroke="#3fb5a8" strokeWidth="2">
+          <circle className="ring" cx="200" cy="110" r="150" />
+          <circle className="ring" cx="200" cy="110" r="150" />
+          <circle className="ring" cx="200" cy="110" r="150" />
+        </g>
+      </svg>
+      <div className="signal-core"><Icon name="wifi" size={30} /></div>
+      <figcaption>
+        <StatusBadge kind="proposed">Concept illustration</StatusBadge>
+      </figcaption>
+    </figure>
+  )
+}
+
 export default function Passenger() {
   const [phase, setPhase] = useState('idle')
   const [seconds, setSeconds] = useState(0)
@@ -39,26 +71,29 @@ export default function Passenger() {
 
   if (phase === 'connected') {
     return (
-      <main className="page narrow stack-4" aria-live="polite">
-        <div className="card pad-lg stack-5">
+      <main className="page narrow" aria-live="polite">
+        <div className="session-card stack-5">
           <div className="session-hero">
-            <div className="session-ring"><Icon name="wifi" size={30} /></div>
+            <div className="session-ring">
+              <span className="pulse" /><span className="pulse" />
+              <Icon name="wifi" size={30} />
+            </div>
             <StatusBadge kind="simulated">Simulated demo session</StatusBadge>
             <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>Demo session active</h1>
             <p className="timer" aria-label={`Session time ${seconds} minutes on the demo clock`}>{seconds} min</p>
-            <p className="t-caption">Demo clock: 1 second on screen = 1 minute of session time</p>
+            <p className="t-caption on-dark">Demo clock: 1 second on screen = 1 minute of session time</p>
           </div>
           <div className="stat-trio">
             <div>
-              <p className="t-caption">Data used</p>
+              <p className="t-caption on-dark">Data used</p>
               <p className="t-metric">{(seconds * example.mbPerMinute).toFixed(1)}<small>MB</small></p>
             </div>
             <div>
-              <p className="t-caption">Speed</p>
+              <p className="t-caption on-dark">Speed</p>
               <p className="t-metric">{example.speed.toFixed(1)}<small>Mbps</small></p>
             </div>
             <div>
-              <p className="t-caption">Access point</p>
+              <p className="t-caption on-dark">Access point</p>
               <p className="t-metric">{example.ap}</p>
             </div>
           </div>
@@ -69,7 +104,7 @@ export default function Passenger() {
               network exists yet. Usage figures are illustrative.
             </span>
           </div>
-          <button className="btn btn-secondary" onClick={end}>Disconnect demo session</button>
+          <button className="btn btn-on-dark" onClick={end}>Disconnect demo session</button>
         </div>
       </main>
     )
@@ -79,8 +114,8 @@ export default function Passenger() {
     return (
       <main className="page narrow stack-4">
         <div className="card pad-lg stack-5">
-          <div className="session-hero">
-            <div className="session-ring"><Icon name="check" size={30} /></div>
+          <div className="session-hero light">
+            <div className="session-ring light"><Icon name="check" size={30} /></div>
             <StatusBadge kind="simulated">Simulated demo session</StatusBadge>
             <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>Demo session ended</h1>
           </div>
@@ -102,7 +137,7 @@ export default function Passenger() {
   return (
     <main className="page">
       <div className="passenger-grid">
-        <section aria-labelledby="hero-title">
+        <section aria-labelledby="hero-title" className="rise">
           <p className="tag"><Icon name="search" size={16} />Concept demo · YSI Cohort 1</p>
           <h1 id="hero-title" className="t-hero">Better access to connectivity in busy public places.</h1>
           <p className="t-lead" style={{ marginTop: 'var(--s4)' }}>
@@ -128,7 +163,9 @@ export default function Passenger() {
           </div>
         </section>
 
-        <div className="stack-4">
+        <div className="stack-4 rise" style={{ '--d': '90ms' }}>
+          <SignalPanel />
+
           <section className="card" aria-labelledby="status-title">
             <h2 id="status-title" className="t-section">Service status</h2>
             <div className="divided" style={{ marginTop: 'var(--s3)' }}>
@@ -157,18 +194,35 @@ export default function Passenger() {
               </div>
             </div>
           </section>
-
-          <section className="card">
-            <h2 className="t-section">The other side: operators</h2>
-            <p className="t-caption" style={{ marginTop: 'var(--s2)', fontSize: '0.875rem' }}>
-              A future operator would need to see usage, speed, uptime and incidents to decide what to improve.
-            </p>
-            <a className="link-btn" href="#/operator" style={{ marginTop: 'var(--s2)' }}>
-              View the operator dashboard <Icon name="arrow" size={16} />
-            </a>
-          </section>
         </div>
       </div>
+
+      <section className="flow-wrap rise" style={{ '--d': '160ms' }} aria-labelledby="flow-title">
+        <div className="flow-head">
+          <h2 id="flow-title" className="t-section">How it could work</h2>
+          <p className="t-caption">The proposed system, and what exists today.</p>
+        </div>
+        <ol className="flow">
+          {FLOW.map((s, i) => (
+            <li key={s.title} className="card flow-step">
+              <div className="flow-top">
+                <span className="flow-icon"><Icon name={s.icon} size={20} /></span>
+                <span className="flow-num">{i + 1}</span>
+              </div>
+              <h3 className="t-label" style={{ fontSize: '1rem', marginTop: 'var(--s3)' }}>{s.title}</h3>
+              <p className="t-caption" style={{ marginTop: 2 }}>{s.text}</p>
+              <div style={{ marginTop: 'var(--s3)' }}>
+                <StatusBadge kind={s.badge}>{s.label}</StatusBadge>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p className="t-caption flow-foot">
+          <Icon name="zap" size={14} />
+          <span>Optional solar and battery power is being considered, subject to feasibility.</span>
+          <a className="link-btn" href="#/operator">View the operator dashboard <Icon name="arrow" size={16} /></a>
+        </p>
+      </section>
     </main>
   )
 }

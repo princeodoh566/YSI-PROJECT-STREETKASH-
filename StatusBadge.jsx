@@ -12,6 +12,7 @@ const KINDS = {
   live: { icon: 'check', cls: 'badge-live' },
   warning: { icon: 'alert', cls: 'badge-warning' },
   neutral: { icon: 'check', cls: 'badge-neutral' },
+  built: { icon: 'check', cls: 'badge-built' }, // exists in the prototype software (not a live service)
 }
 
 export default function StatusBadge({ kind = 'neutral', icon, children }) {

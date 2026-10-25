@@ -278,3 +278,16 @@ export function getInvestigate(range) {
         : `Was the "${topType[0].toLowerCase()}" an isolated event? Check its cause before it repeats.`,
   ]
 }
+
+// Data used (GB) per hour (today) or per day (7 days). Same sessions as every other figure.
+export function getDataSeries(range) {
+  if (range === 'today') {
+    const hours = Math.floor(NOW_MIN / 60) + 1
+    return Array.from({ length: hours }, (_, h) =>
+      SESSIONS.filter((s) => s.day === TODAY && s.hour === h).reduce((a, s) => a + s.mb, 0) / 1000,
+    )
+  }
+  return Array.from({ length: DAYS }, (_, d) =>
+    SESSIONS.filter((s) => s.day === d).reduce((a, s) => a + s.mb, 0) / 1000,
+  )
+}
