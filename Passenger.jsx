@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icons.jsx'
-import StatusBadge from './StatusBadge.jsx'
 import { SITE, getSessionExample } from './demoData.js'
 
 // Passenger journey: idle -> connecting -> connected -> ended.
 // Everything here is front-end state only. No network connection is ever made.
 const example = getSessionExample()
 
-// What each part of the concept is, and its honest status today.
+// How the service works, from connection to monitoring.
 const FLOW = [
-  { icon: 'server', title: 'Internet backhaul', text: 'The connection that brings internet into the site.', badge: 'proposed', label: 'Proposed' },
-  { icon: 'wifi', title: 'Wi-Fi access points', text: 'Coverage across the waiting and boarding areas.', badge: 'proposed', label: 'Proposed' },
-  { icon: 'users', title: 'Passenger access', text: 'A simple way to connect and see session status.', badge: 'simulated', label: 'Demo built' },
-  { icon: 'activity', title: 'Monitoring and analytics', text: 'Usage, speed, uptime and incidents for operators.', badge: 'simulated', label: 'Demo built' },
+  { icon: 'server', title: 'Internet backhaul', text: 'A dependable connection that brings internet into the location.' },
+  { icon: 'wifi', title: 'Wi-Fi access points', text: 'Coverage across waiting and boarding areas.' },
+  { icon: 'users', title: 'Passenger access', text: 'A simple way to connect and see session status.' },
+  { icon: 'activity', title: 'Monitoring and analytics', text: 'Usage, speed, uptime and incidents for operators.' },
+]
+
+// Where StreetKash starts and where it is going.
+const GROWTH = [
+  { label: 'Start', text: 'Prof. Nnenna Oti Central Bus Terminal, Umuahia' },
+  { label: 'Grow', text: 'Terminals, markets and campuses across Abia State' },
+  { label: 'Scale', text: 'Suitable public locations across Nigeria' },
 ]
 
 function SignalPanel() {
@@ -32,9 +38,7 @@ function SignalPanel() {
         </g>
       </svg>
       <div className="signal-core"><Icon name="wifi" size={30} /></div>
-      <figcaption>
-        <StatusBadge kind="proposed">Concept illustration</StatusBadge>
-      </figcaption>
+      <figcaption className="signal-cap">Reliable access where people wait</figcaption>
     </figure>
   )
 }
@@ -78,10 +82,10 @@ export default function Passenger() {
               <span className="pulse" /><span className="pulse" />
               <Icon name="wifi" size={30} />
             </div>
-            <StatusBadge kind="simulated">Simulated demo session</StatusBadge>
-            <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>Demo session active</h1>
-            <p className="timer" aria-label={`Session time ${seconds} minutes on the demo clock`}>{seconds} min</p>
-            <p className="t-caption on-dark">Demo clock: 1 second on screen = 1 minute of session time</p>
+            <p className="t-caption on-dark">Passenger preview</p>
+            <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>You are connected</h1>
+            <p className="timer" aria-label={`Session time ${seconds} minutes`}>{seconds} min</p>
+            <p className="t-caption on-dark">Preview clock: 1 second = 1 minute</p>
           </div>
           <div className="stat-trio">
             <div>
@@ -100,11 +104,10 @@ export default function Passenger() {
           <div className="note">
             <Icon name="info" size={18} />
             <span>
-              This is a simulation. Your phone is not connected to StreetKash Wi-Fi, because no StreetKash
-              network exists yet. Usage figures are illustrative.
+              This is a preview of the passenger experience. Usage figures are sample data.
             </span>
           </div>
-          <button className="btn btn-on-dark" onClick={end}>Disconnect demo session</button>
+          <button className="btn btn-on-dark" onClick={end}>Disconnect</button>
         </div>
       </main>
     )
@@ -116,14 +119,13 @@ export default function Passenger() {
         <div className="card pad-lg stack-5">
           <div className="session-hero light">
             <div className="session-ring light"><Icon name="check" size={30} /></div>
-            <StatusBadge kind="simulated">Simulated demo session</StatusBadge>
-            <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>Demo session ended</h1>
+            <h1 className="t-page" style={{ marginTop: 'var(--s3)' }}>Session ended</h1>
           </div>
           <div className="divided">
-            <div className="line"><span className="muted">Session length (demo clock)</span><strong>{summary.minutes} min</strong></div>
-            <div className="line"><span className="muted">Data used (illustrative)</span><strong>{summary.mb.toFixed(1)} MB</strong></div>
+            <div className="line"><span className="muted">Session length</span><strong>{summary.minutes} min</strong></div>
+            <div className="line"><span className="muted">Data used</span><strong>{summary.mb.toFixed(1)} MB</strong></div>
           </div>
-          <p className="t-caption">Nothing was connected, paid for or stored. This screen only shows how a session summary could look.</p>
+          <p className="t-caption">This is how a session summary looks. Figures are sample data.</p>
           <div className="stack-3">
             <button className="btn btn-primary" onClick={reset}>Back to start</button>
             <a className="btn btn-secondary" href="#/operator">See what an operator would see</a>
@@ -138,27 +140,27 @@ export default function Passenger() {
     <main className="page">
       <div className="passenger-grid">
         <section aria-labelledby="hero-title" className="rise">
-          <p className="tag"><Icon name="search" size={16} />Concept demo · YSI Cohort 1</p>
-          <h1 id="hero-title" className="t-hero">Better access to connectivity in busy public places.</h1>
+          <p className="tag"><Icon name="wifi" size={16} />Public connectivity service</p>
+          <h1 id="hero-title" className="t-hero">Better connectivity where people gather.</h1>
           <p className="t-lead" style={{ marginTop: 'var(--s4)' }}>
-            StreetKash is exploring a practical way to make internet access more accessible at transport
-            terminals, supported by data on usage and service performance.
+            StreetKash brings affordable, reliable internet access to busy public places, with a dashboard
+            that helps operators run the service.
           </p>
           <p className="t-body muted" style={{ marginTop: 'var(--s3)' }}>
-            Terminals bring many people together to wait and travel. This project sets out to find out how
-            well they are connected today, and what it would take to improve it.
+            We are starting at Prof. Nnenna Oti Central Bus Terminal in Umuahia, and growing to more
+            terminals, markets and campuses across Abia State and Nigeria.
           </p>
           <div className="hero-actions">
             <button className="btn btn-primary inline" onClick={connect} disabled={busy} aria-busy={busy}>
               {busy ? (
-                <><span className="spinner" aria-hidden="true" />Starting demo session…</>
+                <><span className="spinner" aria-hidden="true" />Connecting…</>
               ) : (
-                <><Icon name="wifi" size={20} />Try the demo connection</>
+                <><Icon name="wifi" size={20} />Try the passenger experience</>
               )}
             </button>
             <p className="t-caption">
               <Icon name="info" size={14} />
-              <span>Simulated. No real Wi-Fi connection is made, and no payment or personal details are needed.</span>
+              <span>A preview of how passengers connect. No payment or personal details needed.</span>
             </p>
           </div>
         </section>
@@ -166,32 +168,26 @@ export default function Passenger() {
         <div className="stack-4 rise" style={{ '--d': '90ms' }}>
           <SignalPanel />
 
-          <section className="card" aria-labelledby="status-title">
-            <h2 id="status-title" className="t-section">Service status</h2>
-            <div className="divided" style={{ marginTop: 'var(--s3)' }}>
-              <div className="line">
-                <span>Demonstration</span>
-                <StatusBadge kind="simulated" icon="wifi">Wi-Fi available (simulated)</StatusBadge>
-              </div>
-              <div className="line">
-                <span>Real-world service</span>
-                <StatusBadge kind="proposed">Proposed, not deployed</StatusBadge>
-              </div>
-            </div>
-            <p className="t-caption legend-note">
-              Proposed means planned, not built. Simulated means shown for demonstration. A live label would
-              appear only for a confirmed, working service. There is none yet.
-            </p>
-          </section>
-
           <section className="card" aria-labelledby="loc-title">
             <div className="row" style={{ alignItems: 'flex-start' }}>
               <span className="loc-icon"><Icon name="pin" size={20} /></span>
               <div>
-                <p id="loc-title" className="t-caption">Proposed pilot location</p>
+                <p id="loc-title" className="t-caption">Starting location</p>
                 <p className="t-label" style={{ fontSize: '1rem' }}>{SITE.name}</p>
-                <p className="t-caption">Umuahia, Abia State. Site access and approval are not yet confirmed.</p>
+                <p className="t-caption">Umuahia, Abia State</p>
               </div>
+            </div>
+          </section>
+
+          <section className="card" aria-labelledby="growth-title">
+            <h2 id="growth-title" className="t-section">Where we are going</h2>
+            <div className="divided" style={{ marginTop: 'var(--s3)' }}>
+              {GROWTH.map((g) => (
+                <div className="line" key={g.label} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                  <span className="t-caption">{g.label}</span>
+                  <strong>{g.text}</strong>
+                </div>
+              ))}
             </div>
           </section>
         </div>
@@ -199,8 +195,8 @@ export default function Passenger() {
 
       <section className="flow-wrap rise" style={{ '--d': '160ms' }} aria-labelledby="flow-title">
         <div className="flow-head">
-          <h2 id="flow-title" className="t-section">How it could work</h2>
-          <p className="t-caption">The proposed system, and what exists today.</p>
+          <h2 id="flow-title" className="t-section">How it works</h2>
+          <p className="t-caption">From the internet connection to the operator view.</p>
         </div>
         <ol className="flow">
           {FLOW.map((s, i) => (
@@ -211,15 +207,12 @@ export default function Passenger() {
               </div>
               <h3 className="t-label" style={{ fontSize: '1rem', marginTop: 'var(--s3)' }}>{s.title}</h3>
               <p className="t-caption" style={{ marginTop: 2 }}>{s.text}</p>
-              <div style={{ marginTop: 'var(--s3)' }}>
-                <StatusBadge kind={s.badge}>{s.label}</StatusBadge>
-              </div>
             </li>
           ))}
         </ol>
         <p className="t-caption flow-foot">
           <Icon name="zap" size={14} />
-          <span>Optional solar and battery power is being considered, subject to feasibility.</span>
+          <span>Backup power keeps the service available through outages.</span>
           <a className="link-btn" href="#/operator">View the operator dashboard <Icon name="arrow" size={16} /></a>
         </p>
       </section>

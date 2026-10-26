@@ -4,10 +4,10 @@
 // from a fixed seed so it is identical on every load and refresh.
 
 export const DEMO_BANNER =
-  'DEMO MODE — All network activity and performance figures shown here are simulated.'
+  'Figures on this dashboard are simulated for demonstration.'
 
 export const SITE = {
-  name: 'Prof. Nnenna Oti Central Bus Terminal (Nenoti Posta)',
+  name: 'Prof. Nnenna Oti Central Bus Terminal',
   place: 'Umuahia, Abia State, Nigeria',
 }
 
@@ -134,8 +134,8 @@ export const RANGES = [
 
 export const periodLabel = (range) =>
   range === 'today'
-    ? `Today, 00:00–${fmtTime(NOW_MIN)} (demo time)`
-    : `Day 1 to Today ${fmtTime(NOW_MIN)} (7 demo days)`
+    ? `Today, 00:00–${fmtTime(NOW_MIN)}`
+    : `Last 7 days, to ${fmtTime(NOW_MIN)} today`
 
 const periodMinutes = (range) => (range === 'today' ? NOW_MIN : TODAY * 1440 + NOW_MIN)
 const sessionsIn = (range) => (range === 'today' ? SESSIONS.filter((s) => s.day === TODAY) : SESSIONS)

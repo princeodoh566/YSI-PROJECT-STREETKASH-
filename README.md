@@ -9,9 +9,9 @@ nothing is measured, and nothing connects to the internet.
     npm run build
 
 ## Views (hash routes, no server config needed)
-- `#/`          Passenger: concept, service status (simulated vs proposed), demo session journey
+- `#/`          Passenger: StreetKash proposition, starting location, growth path, passenger preview journey
 - `#/operator`  Operator dashboard: 6 metrics, sessions chart, speed trend, incidents, interpretation
-- `#/about`     What is built, simulated, proposed and still to be validated (`#/status` still works)
+- `#/about`     About StreetKash: offering, revenue model and growth plan (`#/status` still works)
 
 ## Files
 - `demoData.js`  the single seeded simulated dataset; all figures derive from it

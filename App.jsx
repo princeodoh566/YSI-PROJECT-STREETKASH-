@@ -1,15 +1,14 @@
 import { Component, useEffect, useState } from 'react'
 import Icon from './Icons.jsx'
-import { DEMO_BANNER } from './demoData.js'
 import About from './About.jsx'
 import Operator from './Operator.jsx'
 import Passenger from './Passenger.jsx'
 
-// Two main views. "About" lives in the footer because it explains the prototype rather than being part of the product.
+// Main views. About explains the service and its growth plan.
 const ROUTES = {
   '/': { title: 'Passenger', Page: Passenger, nav: 'Passenger' },
   '/operator': { title: 'Operator dashboard', Page: Operator, nav: 'Operator' },
-  '/about': { title: 'About this prototype', Page: About },
+  '/about': { title: 'About', Page: About, nav: 'About' },
 }
 const ALIASES = { '/status': '/about' } // the old Status page now lives at /about
 
@@ -28,8 +27,8 @@ class Boundary extends Component {
       <main className="page narrow">
         <div className="card pad-lg stack-4">
           <h1 className="t-page">Something went wrong</h1>
-          <p className="muted">This screen could not be shown. Restarting the demo usually fixes it.</p>
-          <button className="btn btn-primary" onClick={this.props.onRestart}>Restart demo</button>
+          <p className="muted">This screen could not be shown. Restarting usually fixes it.</p>
+          <button className="btn btn-primary" onClick={this.props.onRestart}>Restart</button>
         </div>
       </main>
     )
@@ -64,7 +63,7 @@ export default function App() {
         <div className="topbar-inner">
           <a className="brand" href="#/" aria-label="StreetKash home">
             <span className="brand-mark"><Icon name="wifi" size={18} /></span>
-            StreetKash
+            <span className="brand-name">StreetKash</span>
           </a>
           <nav className="nav" aria-label="Main">
             {Object.entries(ROUTES).filter(([, r]) => r.nav).map(([path, r]) => (
@@ -78,10 +77,10 @@ export default function App() {
       </Boundary>
       <footer className="footer">
         <div className="footer-inner">
-          <p className="t-caption">{DEMO_BANNER}</p>
+          <p className="t-caption">StreetKash · Public connectivity for busy places · YSI Cohort 1</p>
           <div className="footer-links">
-            <a className="link-btn" href="#/about">About this prototype</a>
-            <button className="link-btn" onClick={restart}><Icon name="reset" size={16} />Restart demo</button>
+            <a className="link-btn" href="#/about">About StreetKash</a>
+            <button className="link-btn" onClick={restart}><Icon name="reset" size={16} />Restart</button>
           </div>
         </div>
       </footer>

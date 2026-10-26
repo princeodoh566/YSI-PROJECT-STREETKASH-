@@ -322,3 +322,26 @@ body {
   .session-ring .pulse { animation: none; opacity: 0; }
 }
 td[data-label='Affects'] { white-space: nowrap; }
+
+/* caption on the signal panel */
+.signal-cap { color: rgba(255,255,255,0.85); font-size: 0.875rem; font-weight: 500; }
+
+/* three-up cards on the About page */
+.section-title + .about-grid { margin-top: 0; }
+@media (min-width: 900px) { .about-grid.three { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* compact top bar on small phones so three links fit */
+@media (max-width: 480px) {
+  .topbar-inner { padding: 0 var(--s3); gap: var(--s2); }
+  .brand { font-size: 1rem; gap: 8px; }
+  .nav { gap: 0; }
+  .nav a { padding: 0 9px; font-size: 0.875rem; }
+  .nav a[aria-current='page']::after { left: 9px; right: 9px; }
+}
+@media (max-width: 380px) {
+  .brand { font-size: 0.9375rem; gap: 6px; }
+  .brand-mark { width: 26px; height: 26px; }
+  .nav a { padding: 0 6px; font-size: 0.8125rem; }
+  .nav a[aria-current='page']::after { left: 6px; right: 6px; }
+}
+@media (max-width: 340px) { .brand-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }

@@ -55,7 +55,7 @@ export default function Operator() {
       <div className="dash-band">
         <div className="dash-band-inner">
           <div className="stack-3">
-            <p className="band-eyebrow">Operator view · proposed Nenoti Posta pilot</p>
+            <p className="band-eyebrow">Operator view · Prof. Nnenna Oti Central Bus Terminal</p>
             <h1 className="t-page">Service dashboard</h1>
             <p className="band-sub">{period}</p>
             <div className="note note-dark" role="note">
@@ -76,8 +76,8 @@ export default function Operator() {
       <div className="page dash-body">
         {/* B. Summary metrics */}
         <section className="metrics" aria-label="Summary metrics (simulated)">
-          <Metric icon="users" label="Active now" value={m.activeNow} unit="sessions" def={`Open at ${fmtTime(NOW_MIN)} demo time`} />
-          <Metric icon="activity" label="Sessions" value={m.sessions.toLocaleString()} unit="started" def={today ? 'Today so far' : 'Across 7 demo days'} spark={usage.map((d) => d.value)} />
+          <Metric icon="users" label="Active now" value={m.activeNow} unit="sessions" def={`Open at ${fmtTime(NOW_MIN)}`} />
+          <Metric icon="activity" label="Sessions" value={m.sessions.toLocaleString()} unit="started" def={today ? 'Today so far' : 'Last 7 days'} spark={usage.map((d) => d.value)} />
           <Metric icon="database" label="Data used" value={m.dataGB.toFixed(1)} unit="GB" def="All sessions in period" spark={dataSeries} />
           <Metric icon="gauge" label="Average speed" value={m.avgSpeed.toFixed(1)} unit="Mbps" def="Mean of session speeds" spark={speed.map((d) => d.value)} />
           <Metric icon="clock" label="Uptime" value={m.uptime.toFixed(1)} unit="%" def={`${m.downMinutes} min service-wide outage`} />
@@ -98,7 +98,7 @@ export default function Operator() {
               data={usage}
               highlight={peak}
               yLabel="Sessions started"
-              xLabel={today ? 'Hour of day (demo time)' : 'Demo day'}
+              xLabel={today ? 'Hour of day' : 'Day'}
               describe={`Bar chart of simulated sessions started per ${unitWord}. Total ${m.sessions}.`}
             />
             <p className="t-caption hint">Hover or tap a bar for its exact value.</p>
@@ -116,7 +116,7 @@ export default function Operator() {
               highlight={speed[peak] && speed[peak].value != null ? peak : -1}
               unit="Mbps"
               yLabel="Speed (Mbps)"
-              xLabel={today ? 'Hour of day (demo time)' : 'Demo day'}
+              xLabel={today ? 'Hour of day' : 'Day'}
               describe={`Line chart of simulated average speed per ${unitWord}, in megabits per second.`}
             />
             <p className="t-caption hint">Gaps mean fewer than 3 sessions, too few to average.</p>
@@ -140,7 +140,7 @@ export default function Operator() {
               <div className="table-wrap">
                 <table className="incident-table">
                   <thead>
-                    <tr><th>When (demo time)</th><th>Event</th><th>Affects</th><th>Minutes</th><th>Status</th></tr>
+                    <tr><th>When</th><th>Event</th><th>Affects</th><th>Minutes</th><th>Status</th></tr>
                   </thead>
                   <tbody>
                     {incidents.map((i) => {
@@ -171,7 +171,7 @@ export default function Operator() {
           <section className="card" aria-labelledby="insight-title">
             <h3 id="insight-title" className="t-section">What the data may suggest</h3>
             <div style={{ marginTop: 'var(--s2)' }}>
-              <StatusBadge kind="simulated">Illustrative, not a measured finding</StatusBadge>
+              <StatusBadge kind="simulated">Sample insight</StatusBadge>
             </div>
             <ul className="insight-list">
               {insights.map((t) => (
